@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>♥</title>
+    <style>
+        /* Global styles */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f0e4f1, #b3d9ff); /* Pastel pink to pastel blue gradient */
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Card container */
+        .card-container {
+            position: relative;
+            width: 300px;
+            height: 350px;
+            cursor: pointer;
+            perspective: 1500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Card shape */
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #f8c1d4; /* Soft pastel pink */
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* Card content (Code Lock) */
+        .card-content {
+            position: relative;
+            color: #ff6b81;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .code-lock {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .digit {
+            width: 60px;
+            height: 60px;
+            background-color: #ffffff;
+            border: 2px solid #f8c1d4;
+            border-radius: 8px;
+            font-size: 24px;
+            text-align: center;
+            line-height: 60px;
+            color: #ff6b81;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            user-select: none;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .digit span {
+            position: absolute;
+            transition: transform 0.2s ease-out;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            background-color: #ff6b81;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background-color: #f8c1d4;
+        }
+
+        /* Shake and Red Flash Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 0, 0, 0.4);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-out;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .shake {
+            animation: shake 0.3s ease-out 3;
+        }
+
+        .flash {
+            opacity: 1;
+        }
+
+        /* Heart and Explosion Effects */
+        .heart {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #ffb6c1;
+            clip-path: path('M 24 4 C 14 -6 0 -2 0 12 C 0 26 24 44 24 44 C 24 44 48 26 48 12 C 48 -2 34 -6 24 4 Z');
+            animation: explode 1s ease-out forwards;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .explosion {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #f8c1d4, #ff6b81, transparent);
+            border-radius: 50%;
+            animation: explode-fx 0.5s ease-out forwards;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes explode {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--x), var(--y)) scale(2);
+            }
+        }
+
+        @keyframes explode-fx {
+            0% {
+                opacity: 1;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(3);
+            }
+        }
+
+        /* Tab Slide Up (Full screen) */
+        .tab {
+            position: fixed;
+            bottom: -120%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #b3d9ff; /* Pastel blue background */
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 9998;
+            transition: bottom 2s ease-in-out;
+            padding: 20px;
+            flex-direction: column;
+            overflow-y: scroll;
+        }
+
+        .tab.show {
+            bottom: 0;
+        }
+
+        .tab-content {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .tab::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <div class="card">
+            <div class="card-content">
+                <div class="code-lock">
+                    <div class="digit" id="digit1" onwheel="changeDigit(event, 'digit1')">
+                        <span>0</span>
+                    </div>
+                    <div class="digit" id="digit2" onwheel="changeDigit(event, 'digit2')">
+                        <span>0</span>
+                    </div>
+                    <div class="digit" id="digit3" onwheel="changeDigit(event, 'digit3')">
+                        <span>0</span>
+                    </div>
+                </div>
+                <button class="submit-btn" onclick="submitCode()">♡</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="tab" id="tab">
+        <div class="tab-content">
+            <H1>HI BABY!!!  I KNEW YOU'D GET THE CODE FIRST TRY</H1>
+            <p>and i really love that you remember even the small things and how you're so so considerate all the time</p>
+            <p>i love you so much i know you're trying your best and i'm so so proud of you for that !! my sweet boy ♡♡♡ you genuinely changed</p>
+            <p>my life for the better because no matter what i know i have you and you have me and even if we have problems sometimes no matter what</p>
+            <p>we'll always have each other. you make me so happy that when even the littlest thing reminds me of you i get giddy... i love you</p>
+            <p>i talk to my friends about you all the time because wow that's MY girlfriend!!! mine !!!!!!!! i think i love everything about you so</p>
+            <p>it's hard for me to lovemail you in specific.. sorry... i love your voice and how you get when you're tired and i love your hair and your</p>
+            <p>eyes and how you get excited to talk to me about things you like and how you update me on your day and everything i love it i love you i!!!</p>
+            <p>i really want to marry you one day. seriously. i want to live with you and wake up next to you every day and just have you.. i love you</p>
+            <p>i'm sososo happy that you're still here with me !!!!! ♡♡♡♡♡♡♡♡♡ happy 600 days baby!! sorry i've been busy lately, i'll make it up to you okay? </p>
+        </div>
+    </div>
+
+    <script>
+        function changeDigit(event, elementId) {
+            const element = document.getElementById(elementId);
+            const span = element.querySelector('span');
+            let currentValue = parseInt(span.innerText);
+            if (event.deltaY > 0) {
+                currentValue = (currentValue + 1) % 10;
+            } else {
+                currentValue = (currentValue - 1 + 10) % 10;
+            }
+            span.innerText = currentValue;
+        }
+
+        function submitCode() {
+            const digit1 = document.getElementById('digit1').querySelector('span').innerText;
+            const digit2 = document.getElementById('digit2').querySelector('span').innerText;
+            const digit3 = document.getElementById('digit3').querySelector('span').innerText;
+            const code = `${digit1}${digit2}${digit3}`;
+
+            if (code === '426') {
+                const tab = document.getElementById('tab');
+                tab.classList.add('show');
+                createEffects();
+            } else {
+                document.body.classList.add('shake');
+                document.getElementById('overlay').classList.add('flash');
+                setTimeout(() => {
+                    document.body.classList.remove('shake');
+                    document.getElementById('overlay').classList.remove('flash');
+                }, 300);
+            }
+        }
+
+        function createEffects() {
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            explosion.style.left = `${window.innerWidth / 2 - 50}px`;
+            explosion.style.top = `${window.innerHeight / 2 - 50}px`;
+            document.body.appendChild(explosion);
+
+            for (let i = 0; i < 10; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                const angle = Math.random() * 2 * Math.PI;
+                const distance = Math.random() * 200 + 50;
+                heart.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
+                heart.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
+                heart.style.left = `${window.innerWidth / 2}px`;
+                heart.style.top = `${window.innerHeight / 2}px`;
+                document.body.appendChild(heart);
+            }
+
+            setTimeout(() => {
+                explosion.remove();
+                document.querySelectorAll('.heart').forEach(heart => heart.remove());
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
+
